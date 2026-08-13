@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.pem
+*.key
+client_secret.txt
+.DS_Store
+coverage/
