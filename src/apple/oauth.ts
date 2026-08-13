@@ -35,8 +35,13 @@ export class AppleTokenProvider {
 
   constructor(
     private readonly credentials: OAuthCredentials,
-    private readonly fetcher: typeof fetch = fetch
+    private readonly fetcher: typeof fetch = fetch,
+    private readonly timeoutMs = 15_000
   ) {}
+
+  invalidate(): void {
+    this.cached = undefined;
+  }
 
   async getAccessToken(): Promise<string> {
     const now = Date.now();
@@ -49,11 +54,19 @@ export class AppleTokenProvider {
       client_secret: clientSecret,
       scope: "searchadsorg"
     });
-    const response = await this.fetcher("https://appleid.apple.com/auth/oauth2/token", {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    let response: Response;
+    try {
+      response = await this.fetcher("https://appleid.apple.com/auth/oauth2/token", {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body,
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (!response.ok) {
       const detail = await response.text();
