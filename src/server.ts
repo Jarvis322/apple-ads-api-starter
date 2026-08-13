@@ -1,4 +1,4 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -125,17 +125,15 @@ export function createApp(gateway: AppleAdsGateway, options: AppOptions = {}) {
 }
 
 function basicAuth(credentials: { user: string; password: string }): express.RequestHandler {
-  const expectedUser = digest(credentials.user);
-  const expectedPassword = digest(credentials.password);
   return (req, res, next) => {
     const authorization = req.headers.authorization;
     if (authorization?.startsWith("Basic ")) {
       const decoded = Buffer.from(authorization.slice(6), "base64").toString("utf8");
       const separator = decoded.indexOf(":");
       if (separator >= 0) {
-        const user = digest(decoded.slice(0, separator));
-        const password = digest(decoded.slice(separator + 1));
-        if (timingSafeEqual(user, expectedUser) && timingSafeEqual(password, expectedPassword)) {
+        const userMatches = constantTimeEqual(decoded.slice(0, separator), credentials.user);
+        const passwordMatches = constantTimeEqual(decoded.slice(separator + 1), credentials.password);
+        if (userMatches && passwordMatches) {
           next();
           return;
         }
@@ -146,8 +144,15 @@ function basicAuth(credentials: { user: string; password: string }): express.Req
   };
 }
 
-function digest(value: string): Buffer {
-  return createHash("sha256").update(value).digest();
+function constantTimeEqual(actual: string, expected: string): boolean {
+  const actualBytes = Buffer.from(actual);
+  const expectedBytes = Buffer.from(expected);
+  const size = Math.max(actualBytes.length, expectedBytes.length, 1);
+  const paddedActual = Buffer.alloc(size);
+  const paddedExpected = Buffer.alloc(size);
+  actualBytes.copy(paddedActual);
+  expectedBytes.copy(paddedExpected);
+  return timingSafeEqual(paddedActual, paddedExpected) && actualBytes.length === expectedBytes.length;
 }
 
 function asyncRoute(handler: (req: express.Request, res: express.Response) => Promise<unknown>) {
