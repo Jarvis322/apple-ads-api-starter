@@ -6,6 +6,8 @@ export type AppleEnvelope<T> = {
   error?: unknown;
 };
 
+export type ReportKind = "adgroups" | "keywords" | "searchterms";
+
 export type Account = {
   orgId: number;
   orgName?: string;
@@ -47,7 +49,10 @@ export type Keyword = {
 export type ReportRequest = {
   startTime: string;
   endTime: string;
-  selector: { pagination: { offset: number; limit: number }; orderBy?: Array<{ field: string; sortOrder: string }> };
+  selector: {
+    pagination: { offset: number; limit: number };
+    orderBy?: Array<{ field: string; sortOrder: string }>;
+  };
   timeZone: string;
   returnRecordsWithNoMetrics: boolean;
   returnRowTotals: boolean;
