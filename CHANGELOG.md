@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.2 - 2026-08-13
+
+- Added step-by-step Apple Ads API role and OAuth credential setup documentation.
+- Documented secure key generation, public-key upload, environment configuration, and organization discovery.
+
 ## 1.0.1 - 2026-08-13
 
 - Limited grouped Dependabot version updates to compatible minor and patch releases.
