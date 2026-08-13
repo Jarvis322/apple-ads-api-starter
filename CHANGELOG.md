@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.1 - 2026-08-13
+
+- Limited grouped Dependabot version updates to compatible minor and patch releases.
+- Kept major security updates enabled while preventing broken automated major-upgrade bundles.
+
 ## 1.0.0 - 2026-08-13
 
 - Added complete pagination for campaigns, ad groups, targeting keywords, and reports.

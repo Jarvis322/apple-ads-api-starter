@@ -1,6 +1,6 @@
 {
   "name": "apple-ads-starter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Secure TypeScript starter and dashboard for Apple Ads Campaign Management API 5",
   "private": true,
   "license": "MIT",
